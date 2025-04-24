@@ -113,7 +113,7 @@ export default function Home() {
                   <textarea
                     value={ocrResult.replace(/[=,—,-,+]/g, " ")}
                     onChange={(e) => setOcrResult(e.target.value)}
-                    className="w-full mt-4 border p-2 rounded-md"
+                    className="w-full h-[150px] mt-4 border p-2 rounded-md"
                   ></textarea>
                 </div>
               </div>
