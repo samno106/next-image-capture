@@ -11,7 +11,6 @@ export default function Home() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [ocrResult, setOcrResult] = useState<string>("");
   const [ocrStatus, setOcrStatus] = useState<string>("");
-  const [lang, setLang] = useState("eng");
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -25,7 +24,7 @@ export default function Home() {
     if (!selectedImage) return;
 
     setOcrStatus("Processing");
-    const worker = await createWorker(["eng", "khm", "chi_sim"], 1, {
+    const worker = await createWorker(["eng", "khm", "chi_sim"], 3, {
       logger: (m) => console.log(m), // Add logger here
     });
 
@@ -111,6 +110,11 @@ export default function Home() {
                       width: "fit-content",
                     }}
                   />
+                  <textarea
+                    value={ocrResult.replace(/[=,—,-,+]/g, " ")}
+                    onChange={(e) => setOcrResult(e.target.value)}
+                    className="w-full mt-4 border p-2 rounded-md"
+                  ></textarea>
                 </div>
               </div>
             )}
