@@ -24,7 +24,6 @@
     "pdfjs-dist": "^5.1.91",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-tesseract": "^1.0.2",
     "tailwind-merge": "^3.2.0",
     "tesseract.js": "^6.0.1"
   },
