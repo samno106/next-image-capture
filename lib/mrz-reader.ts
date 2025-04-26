@@ -1,8 +1,8 @@
 //Trim canvas alpha and white above 205
 const WHITE_POINT = 205;
-const trimCanvas = (canvas) => {
+const trimCanvas = (canvas: any) => {
   const context = canvas.getContext("2d");
-  const copy = document.createElement("canvas").getContext("2d");
+  const copy: any = document.createElement("canvas").getContext("2d");
 
   const imgWidth = canvas.width;
   const imgHeight = canvas.height;
@@ -10,7 +10,7 @@ const trimCanvas = (canvas) => {
   const imgData = context.getImageData(0, 0, imgWidth, imgHeight).data;
 
   // returns the RGBA values of an x, y coord of imgData
-  const getRGBA = (x, y, imgWidth, imgData) => {
+  const getRGBA = (x: any, y: any, imgWidth: any, imgData: any) => {
     return {
       red: imgData[(imgWidth * y + x) * 4],
       green: imgData[(imgWidth * y + x) * 4 + 1],
@@ -19,7 +19,7 @@ const trimCanvas = (canvas) => {
     };
   };
 
-  const getAlpha = (x, y, imgWidth, imgData) => {
+  const getAlpha = (x: any, y: any, imgWidth: any, imgData: any) => {
     const { red, green, blue, alpha } = getRGBA(x, y, imgWidth, imgData);
     return (
       !(red > WHITE_POINT && green > WHITE_POINT && blue > WHITE_POINT) && alpha
@@ -27,7 +27,7 @@ const trimCanvas = (canvas) => {
   };
 
   // finds the first y coord in imgData that is not white
-  const scanY = (fromTop, imgWidth, imgHeight, imgData) => {
+  const scanY = (fromTop: any, imgWidth: any, imgHeight: any, imgData: any) => {
     const offset = fromTop ? 1 : -1;
     const firstCol = fromTop ? 0 : imgHeight - 1;
 
@@ -46,7 +46,12 @@ const trimCanvas = (canvas) => {
   };
 
   // finds the first x coord in imgData that is not white
-  const scanX = (fromLeft, imgWidth, imgHeight, imgData) => {
+  const scanX = (
+    fromLeft: any,
+    imgWidth: any,
+    imgHeight: any,
+    imgData: any
+  ) => {
     const offset = fromLeft ? 1 : -1;
     const firstRow = fromLeft ? 0 : imgWidth - 1;
 
@@ -66,10 +71,10 @@ const trimCanvas = (canvas) => {
   };
 
   // get the corners of the relevant content (everything that's not white)
-  const cropTop = scanY(true, imgWidth, imgHeight, imgData);
-  const cropBottom = scanY(false, imgWidth, imgHeight, imgData);
-  const cropLeft = scanX(true, imgWidth, imgHeight, imgData);
-  const cropRight = scanX(false, imgWidth, imgHeight, imgData);
+  const cropTop: any = scanY(true, imgWidth, imgHeight, imgData);
+  const cropBottom: any = scanY(false, imgWidth, imgHeight, imgData);
+  const cropLeft: any = scanX(true, imgWidth, imgHeight, imgData);
+  const cropRight: any = scanX(false, imgWidth, imgHeight, imgData);
 
   // + 1 is needed because this is a difference, there are n + 1 pixels in
   // between the two numbers inclusive
@@ -96,9 +101,9 @@ const trimCanvas = (canvas) => {
 };
 
 //---------------------------------------------------------------------
-var worker = null;
+var worker: any = null;
 
-const initWorker = (callback) => {
+const initWorker = (callback: any) => {
   var blob = new Blob(
     [window.mrz_worker.toString().replace(/^function .+\{?|\}$/g, "")],
     { type: "text/javascript" }
@@ -108,7 +113,7 @@ const initWorker = (callback) => {
 
   worker.addEventListener(
     "error",
-    function (e) {
+    function (e: any) {
       console.log(e);
     },
     false
@@ -116,7 +121,7 @@ const initWorker = (callback) => {
 
   worker.addEventListener(
     "message",
-    function (e) {
+    function (e: any) {
       var data = e.data;
 
       switch (data.type) {
@@ -148,7 +153,7 @@ const initWorker = (callback) => {
     false
   );
 
-  var pathname = document.location.pathname.split("/");
+  var pathname: any = document.location.pathname.split("/");
   pathname.pop();
   pathname = pathname.join("/");
 
@@ -162,13 +167,16 @@ const initWorker = (callback) => {
   return worker;
 };
 
-export const scanImage = (url, callBack = (info) => console.log(info)) => {
+export const scanImage = (
+  url: any,
+  callBack = (info: any) => console.log(info)
+) => {
   console.log("Scan Image", url);
   const image = new Image();
   image.src = url;
   const { naturalHeight, naturalWidth } = image;
   const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  const ctx: any = canvas.getContext("2d");
   canvas.width = naturalWidth;
   canvas.height = naturalHeight;
   ctx.filter = "grayscale()";
@@ -188,21 +196,24 @@ export const scanImage = (url, callBack = (info) => console.log(info)) => {
   });
 };
 
-export const scanPdf = (pdfUrl, callBack = (info) => console.log(info)) => {
-  var pdfjsLib = window.pdfjsLib;
+export const scanPdf = (
+  pdfUrl: any,
+  callBack = (info: any) => console.log(info)
+) => {
+  var pdfjsLib: any = window.pdfjsLib;
 
   // The workerSrc property shall be specified.
   //pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf-js/pdf.worker.js";
   var loadingTask = pdfjsLib.getDocument(pdfUrl);
 
-  var scanInfo = [];
+  var scanInfo: any = [];
   var totalPages = 1;
-  const updateScanInfo = (data) => {
+  const updateScanInfo = (data: any) => {
     scanInfo.push(data);
 
     if (totalPages === 1) {
       console.log("#updateScanInfo Only One page in the pdf", scanInfo);
-      scanInfo.forEach((scanStatus) => {
+      scanInfo.forEach((scanStatus: any) => {
         callBack(scanStatus);
       });
     } else {
@@ -216,21 +227,21 @@ export const scanPdf = (pdfUrl, callBack = (info) => console.log(info)) => {
   initWorker(updateScanInfo);
 
   loadingTask.promise.then(
-    function (pdf) {
+    function (pdf: any) {
       console.log("PDF loaded", pdf, pdf.numPages);
 
       // Fetch the first page
       totalPages = pdf.numPages;
       for (let i = 1; i <= totalPages; i++) {
         const pageNumber = i;
-        pdf.getPage(pageNumber).then(function (page) {
+        pdf.getPage(pageNumber).then(function (page: any) {
           console.log("Page loaded");
           var scale = 1;
           var viewport = page.getViewport({ scale: scale });
 
           // Prepare canvas using PDF page dimensions
           var canvas = document.createElement("canvas");
-          var context = canvas.getContext("2d");
+          var context: any = canvas.getContext("2d");
           canvas.height = viewport.height;
           canvas.width = viewport.width;
           context.filter = "grayscale()";
@@ -253,7 +264,7 @@ export const scanPdf = (pdfUrl, callBack = (info) => console.log(info)) => {
         });
       }
     },
-    function (reason) {
+    function (reason: any) {
       // PDF loading error
       console.error(reason);
     }
