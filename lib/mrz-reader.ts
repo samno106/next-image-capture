@@ -102,7 +102,11 @@ const trimCanvas = (canvas: any) => {
 
 //---------------------------------------------------------------------
 var worker: any = null;
-
+declare global {
+  interface Window {
+    mrz_worker: any; // or be more specific with the type instead of `any`
+  }
+}
 const initWorker = (callback: any) => {
   var blob = new Blob(
     [window.mrz_worker.toString().replace(/^function .+\{?|\}$/g, "")],
@@ -195,7 +199,11 @@ export const scanImage = (
     image: base64Data,
   });
 };
-
+declare global {
+  interface Window {
+    pdfjsLib: any; // or a more specific type
+  }
+}
 export const scanPdf = (
   pdfUrl: any,
   callBack = (info: any) => console.log(info)
